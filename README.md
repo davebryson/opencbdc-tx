@@ -51,6 +51,28 @@ For more information on how to contribute, please see our [Contribution Guide](d
 1. Clone the repository (including submodules)
     - `git clone --recurse-submodules https://github.com/mit-dci/opencbdc-tx`
 
+# Build
+
+Use these directions if you want to build the source on your machine.
+If you just want to run the system, see "Run the Code" below.
+
+## OSX
+
+1. Install dependencies: `brew install leveldb llvm@11 googletest lcov make wget`
+2. `sudo ./scripts/configure.sh`
+3. `git submodule init && git submodule update`
+4. `./scripts/build.sh`
+
+Note: To run clang-tidy, you must add it to your path. 
+Ex: `ln -s /usr/local/opt/llvm@11/bin/clang-tidy /usr/local/bin/clang-tidy`
+
+
+## Linux
+
+1. `sudo ./scripts/configure.sh`
+2. `git submodule init && git submodule update`
+3. `./scripts/build.sh`
+
 # Run the Code
 
 The easiest way to compile the code and run the system locally is using [Docker](https://www.docker.com).

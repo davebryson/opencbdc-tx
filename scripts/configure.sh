@@ -20,10 +20,7 @@ elif [[ "$OSTYPE" == "darwin"* ]]; then
   CPUS=$(sysctl -n hw.ncpu)
 fi
 
-if [[ "$OSTYPE" == "darwin"* ]]; then
-  brew install leveldb llvm@11 googletest lcov make
-  echo -e "${cyan}To run clang-tidy, you must add it to your path. Ex: ln -s /usr/local/opt/llvm@11/bin/clang-tidy /usr/local/bin/clang-tidy${end}"
-else
+if [[ "$OSTYPE" == "linux-gnu"* ]]; then
   apt update
   apt install -y build-essential wget cmake libgtest-dev libgmock-dev lcov git software-properties-common
 

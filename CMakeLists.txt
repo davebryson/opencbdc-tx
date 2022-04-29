@@ -7,10 +7,19 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_CXX_EXTENSIONS False)
 
+if(APPLE)
+    find_program(GMAKE gmake)
+    set(ENV{CMAKE_C_COMPILER} "/usr/bin/clang")
+    set(ENV{CMAKE_CXX_COMPILER} "/usr/bin/clang++")
+    set(ENV{CMAKE_MAKE_PROGRAM} ${GMAKE})
+    set(ENV{CMAKE_EXPORT_COMPILE_COMMANDS} "ON")
+  
+    include_directories(SYSTEM "/usr/local/include" "/opt/homebrew/include")
+endif()
+
 try_compile(USE_STDFS_LIB ${CMAKE_BINARY_DIR} "${CMAKE_SOURCE_DIR}/cmake-tests/test-libstdc++fs.cpp" LINK_LIBRARIES "stdc++fs")
 check_cxx_compiler_flag(-Wshadow-all W_SHADOW_ALL)
 check_cxx_compiler_flag(-Wnewline-eof W_NEWLINE_EOF)
-
 
 set(SSE41_CXXFLAGS "-msse4.1")
 set(AVX2_CXXFLAGS  "-mavx -mavx2")
@@ -40,7 +49,6 @@ include_directories(3rdparty 3rdparty/secp256k1/include)
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     add_compile_options(-fprofile-arcs -ftest-coverage)
 endif()
-
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     add_link_options(--coverage)
