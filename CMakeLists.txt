@@ -13,7 +13,7 @@ if(APPLE)
     set(ENV{CMAKE_CXX_COMPILER} "/usr/bin/clang++")
     set(ENV{CMAKE_MAKE_PROGRAM} ${GMAKE})
     set(ENV{CMAKE_EXPORT_COMPILE_COMMANDS} "ON")
-  
+
     include_directories(SYSTEM "/usr/local/include" "/opt/homebrew/include")
 endif()
 

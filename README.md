@@ -63,8 +63,7 @@ If you just want to run the system, see "Run the Code" below.
 3. `git submodule init && git submodule update`
 4. `./scripts/build.sh`
 
-Note: To run clang-tidy, you must add it to your path. 
-Ex: `ln -s /usr/local/opt/llvm@11/bin/clang-tidy /usr/local/bin/clang-tidy`
+Note: To run clang-tidy, you must add it to your path. Ex: `ln -s /usr/local/opt/llvm@11/bin/clang-tidy /usr/local/bin/clang-tidy`
 
 
 ## Linux
