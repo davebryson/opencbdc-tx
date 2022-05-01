@@ -56,7 +56,7 @@ For more information on how to contribute, please see our [Contribution Guide](d
 Use these directions if you want to build the source on your machine.
 If you just want to run the system, see "Run the Code" below.
 
-## OSX
+## macOS
 
 1. Install dependencies: `brew install leveldb llvm@11 googletest lcov make wget`
 2. `./scripts/configure.sh`
