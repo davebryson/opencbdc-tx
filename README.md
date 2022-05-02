@@ -62,10 +62,9 @@ If you just want to run the system, see "Run the Code" below.
 2. `./scripts/configure.sh`
 3. `./scripts/build.sh`
 
-Note: To run clang-tidy and clang-format (required by `lint.sh`), you must add them both to your path. 
+Note: To run clang-tidy and clang-format (required by `lint.sh`), you must add them both to your path.
 
 Ex: `ln -s /usr/local/opt/llvm@11/bin/clang-tidy /usr/local/bin/clang-tidy`
-
 
 ## Linux
 
