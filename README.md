@@ -57,10 +57,13 @@ Use these directions if you want to build the source on your machine.
 If you just want to run the system, see "Run the Code" below.
 
 ## macOS
+Ensure your development environment is set correctly for clang:
+
+`sudo xcode-select -switch /Library/Developer/CommandLineTools`
 
 1. Install dependencies: `brew install leveldb llvm@11 googletest lcov make wget`
-2. `./scripts/configure.sh`
-3. `./scripts/build.sh`
+3. `./scripts/configure.sh`
+4. `./scripts/build.sh`
 
 Note: To run clang-tidy and clang-format (required by `lint.sh`), you must add them both to your path.
 
