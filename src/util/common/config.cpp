@@ -227,6 +227,12 @@ namespace cbdc::config {
         return ss.str();
     }
 
+    auto get_minter_key(size_t minter_id) -> std::string {
+        std::stringstream ss;
+        ss << minter_prefix << minter_id;
+        return ss.str();
+    }
+
     auto read_shard_endpoints(options& opts, const parser& cfg)
         -> std::optional<std::string> {
         const auto shard_count = cfg.get_ulong(shard_count_key).value_or(0);
@@ -551,6 +557,22 @@ namespace cbdc::config {
         }
     }
 
+    auto read_minter_options(options& opts, const parser& cfg)
+        -> std::optional<std::string> {
+        const auto minter_count = cfg.get_ulong(minter_count_key).value_or(0);
+
+        for(size_t i{0}; i < minter_count; i++) {
+            auto k = get_minter_key(i);
+            auto v = cfg.get_string(k);
+            if(!v.has_value()) {
+                return "Missing minter key/value";
+            }
+            auto pubkey = cbdc::hash_from_hex(v.value());
+            opts.m_minter_pubkeys.insert(std::move(pubkey));
+        }
+        return std::nullopt;
+    }
+
     void read_loadgen_options(options& opts, const parser& cfg) {
         opts.m_input_count
             = cfg.get_ulong(input_count_key).value_or(opts.m_input_count);
@@ -581,7 +603,12 @@ namespace cbdc::config {
 
         opts.m_twophase_mode = cfg.get_ulong(two_phase_mode).value_or(0) != 0;
 
-        auto err = read_sentinel_options(opts, cfg);
+        auto err = read_minter_options(opts, cfg);
+        if(err.has_value()) {
+            return err.value();
+        }
+
+        err = read_sentinel_options(opts, cfg);
         if(err.has_value()) {
             return err.value();
         }

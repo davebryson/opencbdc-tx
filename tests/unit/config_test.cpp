@@ -3,6 +3,7 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
+#include "util.hpp"
 #include "util/common/config.hpp"
 
 #include <gtest/gtest.h>
@@ -118,4 +119,28 @@ TEST_F(config_validation_test, parsing_validation) {
 
     auto nonexistent = ex.get_string("lorem ipsum");
     EXPECT_FALSE(nonexistent.has_value());
+}
+
+class ConfigWithFileTest : public ::testing::Test {
+  protected:
+    void SetUp() override {
+        cbdc::test::load_config(m_basic_cfg_path, m_opts);
+    }
+
+    static constexpr auto m_basic_cfg_path
+        = "./tests/unit/basic_config_tests.cfg";
+    cbdc::config::options m_opts{};
+};
+
+TEST_F(ConfigWithFileTest, load_from_file) {
+    const auto t2
+        = "ecc477729befbfdf71e0f86dafb2943f728fd8c183962012c7edf55e2d599f5a";
+    const auto rawt2 = cbdc::hash_from_hex(t2);
+
+    EXPECT_TRUE(m_opts.m_minter_pubkeys.size() == 2);
+
+    auto r1 = m_opts.m_minter_pubkeys.find(rawt2);
+    EXPECT_TRUE(r1 != m_opts.m_minter_pubkeys.end());
+
+    EXPECT_EQ(rawt2, *r1);
 }

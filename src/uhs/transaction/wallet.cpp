@@ -27,10 +27,12 @@ namespace cbdc {
         -> transaction::full_tx {
         transaction::full_tx ret;
 
+        auto pubkey = generate_minter_key();
+
         for(size_t i = 0; i < n_outputs; i++) {
             transaction::output out;
 
-            const auto pubkey = generate_key();
+            // const auto pubkey = generate_key();
 
             out.m_witness_program_commitment
                 = transaction::validation::get_p2pk_witness_commitment(pubkey);
@@ -119,6 +121,20 @@ namespace cbdc {
             }
         }
         return ret;
+    }
+
+    auto transaction::wallet::generate_minter_key() -> const pubkey_t {
+        if(m_pubkeys.size() == 0) {
+            // new wallet. create the minter key
+            return generate_key();
+        } else {
+            // first key is the minter key
+            return m_pubkeys[0];
+        }
+    }
+
+    auto transaction::wallet::minter_pubkey_as_hex() -> const std::string {
+        return to_string(generate_minter_key());
     }
 
     auto transaction::wallet::generate_key() -> pubkey_t {

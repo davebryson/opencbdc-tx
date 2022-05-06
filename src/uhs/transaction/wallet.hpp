@@ -117,6 +117,15 @@ namespace cbdc::transaction {
                                        const pubkey_t& payee)
             -> std::vector<input>;
 
+        /// Generates the key pair that can be used to mint new coins
+        /// \return the public key.
+        auto generate_minter_key() -> const pubkey_t;
+
+        /// Return the minter's public key as a hex string that can be
+        /// used in the configuration file.
+        /// \return hex string
+        auto minter_pubkey_as_hex() -> const std::string;
+
         /// Generates a new public key at which this wallet can receive
         /// payments via \ref send_to.
         /// \return a new public key.
