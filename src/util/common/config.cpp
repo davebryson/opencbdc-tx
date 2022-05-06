@@ -562,12 +562,13 @@ namespace cbdc::config {
         const auto minter_count = cfg.get_ulong(minter_count_key).value_or(0);
 
         for(size_t i{0}; i < minter_count; i++) {
-            auto k = get_minter_key(i);
-            auto v = cfg.get_string(k);
+            const auto minter_k = get_minter_key(i);
+            const auto v = cfg.get_string(minter_k);
             if(!v.has_value()) {
-                return "Missing minter key/value";
+                return "Missing minter key/value: " + std::to_string(i) + " ("
+                     + minter_k + ")";
             }
-            auto pubkey = cbdc::hash_from_hex(v.value());
+            const auto pubkey = cbdc::hash_from_hex(v.value());
             opts.m_minter_pubkeys.insert(std::move(pubkey));
         }
         return std::nullopt;
