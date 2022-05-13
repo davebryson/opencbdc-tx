@@ -59,7 +59,10 @@ namespace cbdc {
         /// \param output_val value of the amount to associate with each output in the base unit of the currency.
         /// \return the completed transaction.
         auto mint(size_t n_outputs, uint32_t output_val)
-            -> transaction::full_tx;
+            -> std::pair<std::optional<transaction::full_tx>,
+                         std::optional<cbdc::sentinel::response>>;
+
+        void setup_minter_wallet();
 
         /// \brief Send a specified amount from this client's wallet to a
         ///        target address.

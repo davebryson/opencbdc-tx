@@ -126,6 +126,17 @@ namespace cbdc::transaction {
         /// \return hex string
         auto minter_pubkey_as_hex() -> const std::string;
 
+        /// Generate a fixed public key for a minter.  This is
+        /// so pre-configured files can be used with a known minter's
+        /// public key.
+        ///
+        /// This should only be used for testing and experimentation.
+        ///
+        /// Hexed version of the public key:
+        /// 1f05f6173c4f7bef58f7e912c4cb1389097a38f1a9e24c3674d67a0f142af244
+        /// \return a deterministic public key
+        auto generate_test_minter_key() -> pubkey_t;
+
         /// Generates a new public key at which this wallet can receive
         /// payments via \ref send_to.
         /// \return a new public key.

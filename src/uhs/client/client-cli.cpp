@@ -10,11 +10,13 @@
 #include "crypto/sha256.h"
 #include "twophase_client.hpp"
 #include "uhs/transaction/messages.hpp"
+#include "uhs/transaction/wallet.hpp"
 #include "util/common/config.hpp"
 #include "util/serialization/util.hpp"
 
 #include <future>
 #include <iostream>
+#include <filesystem>
 
 static constexpr auto bits_per_byte = 8;
 static constexpr auto bech32_bits_per_symbol = 5;
@@ -31,10 +33,29 @@ auto mint_command(cbdc::client& client, const std::vector<std::string>& args)
     const auto n_outputs = std::stoull(args[5]);
     const auto output_val = std::stoul(args[6]);
 
-    const auto mint_tx
+    const auto [tx, resp]
         = client.mint(n_outputs, static_cast<uint32_t>(output_val));
-    std::cout << cbdc::to_string(cbdc::transaction::tx_id(mint_tx))
+    if(!tx.has_value()) {
+        std::cout << "Could not generate valid mint tx." << std::endl;
+        return false;
+    }
+
+    std::cout << "tx_id:" << std::endl
+              << cbdc::to_string(cbdc::transaction::tx_id(tx.value()))
               << std::endl;
+
+    if(resp.has_value()) {
+        std::cout << "Sentinel responded: "
+                  << cbdc::sentinel::to_string(resp.value().m_tx_status)
+                  << std::endl;
+        if(resp.value().m_tx_error.has_value()) {
+            std::cout << "Validation error: "
+                      << cbdc::transaction::validation::to_string(
+                             resp.value().m_tx_error.value())
+                      << std::endl;
+        }
+    }
+
     return true;
 }
 
@@ -203,9 +224,37 @@ auto confirmtx_command(cbdc::client& client,
     return true;
 }
 
+/// Generate a demo wallet for use with demo. It creates a minter public key
+/// to match the value pre-configued in the provided 'cfg' files.
+///
+/// Example use: client-cli <wallet file name> demowallet
+auto generate_demo_minter_wallet(const std::vector<std::string>& args)
+    -> bool {
+    const auto wallet_file = args[1];
+    if(std::filesystem::exists(wallet_file)) {
+        std::cout << " " << wallet_file << " already exists" << std::endl;
+        return false;
+    }
+    cbdc::transaction::wallet wallet{};
+    const auto pk = wallet.generate_test_minter_key();
+    const auto hexed = cbdc::to_string(pk);
+    wallet.save(wallet_file);
+
+    std::cout << " Created demo wallet. Saved to: " << wallet_file << "\n"
+              << " Minter public key is: " << hexed << std::endl;
+    return true;
+}
+
 // LCOV_EXCL_START
 auto main(int argc, char** argv) -> int {
     auto args = cbdc::config::get_args(argc, argv);
+
+    // Added to support created a demo wallet
+    if(args.size() == 3 && args[2] == "demowallet") {
+        generate_demo_minter_wallet(args);
+        return 0;
+    }
+
     static constexpr auto min_arg_count = 5;
     if(args.size() < min_arg_count) {
         std::cerr << "Usage: " << args[0]

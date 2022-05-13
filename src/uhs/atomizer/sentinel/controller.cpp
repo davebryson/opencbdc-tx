@@ -64,7 +64,7 @@ namespace cbdc::sentinel {
 
     auto controller::execute_transaction(transaction::full_tx tx)
         -> std::optional<cbdc::sentinel::response> {
-        const auto res = transaction::validation::check_tx(tx);
+        const auto res = transaction::validation::check_tx(tx, m_opts);
         tx_status status{tx_status::pending};
         if(res.has_value()) {
             status = tx_status::static_invalid;

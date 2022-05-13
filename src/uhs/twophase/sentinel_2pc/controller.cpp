@@ -49,7 +49,8 @@ namespace cbdc::sentinel_2pc {
     auto controller::execute_transaction(transaction::full_tx tx,
                                          result_callback_type result_callback)
         -> bool {
-        const auto validation_err = transaction::validation::check_tx(tx);
+        const auto validation_err
+            = transaction::validation::check_tx(tx, m_opts);
         if(validation_err.has_value()) {
             auto tx_id = transaction::tx_id(tx);
             m_logger->debug(

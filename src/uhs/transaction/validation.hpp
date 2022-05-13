@@ -67,6 +67,7 @@ namespace cbdc::transaction::validation {
         program_mismatch,
         ///< The witness's specified program doesn't match its commitment
         invalid_public_key, ///< The witness's public key is invalid
+        invalid_minter_key, ///< The witness is not a valid minter
         invalid_signature   ///< The witness's signature is invalid
     };
 
@@ -80,6 +81,8 @@ namespace cbdc::transaction::validation {
         ///< The total values of inputs and outputs do not match
         value_overflow,
         ///< The total value of inputs/outputs overflows a 64-bit integer
+        mint_output_witness_mismatch ///< number of outputs don't match
+                                     ///< witnesses
     };
 
     /// An error that may occur when sentinels validate witness commitments
@@ -118,8 +121,16 @@ namespace cbdc::transaction::validation {
     /// \note This function returns immediately on the first-found error.
     ///
     /// \param tx transaction to validate
+    /// \param options configuration options
     /// \return null if transaction is valid, otherwise error information
-    auto check_tx(const transaction::full_tx& tx) -> std::optional<tx_error>;
+    auto check_tx(const transaction::full_tx& tx,
+                  const cbdc::config::options& options)
+        -> std::optional<tx_error>;
+    auto check_normal_tx(const cbdc::transaction::full_tx& tx)
+        -> std::optional<tx_error>;
+    auto check_mint_tx(const cbdc::transaction::full_tx& tx,
+                       const cbdc::config::options& options)
+        -> std::optional<tx_error>;
     auto check_tx_structure(const transaction::full_tx& tx)
         -> std::optional<tx_error>;
     auto check_input_structure(const transaction::input& inp) -> std::optional<
@@ -151,6 +162,26 @@ namespace cbdc::transaction::validation {
     auto check_output_value(const transaction::output& out)
         -> std::optional<output_error_code>;
     auto get_p2pk_witness_commitment(const pubkey_t& payee) -> hash_t;
+
+    // TODO: Document below
+    auto check_mint_witness(const cbdc::transaction::full_tx& tx,
+                            size_t idx,
+                            const cbdc::config::options& options)
+        -> std::optional<witness_error_code>;
+    auto check_mint_p2pk_witness(const cbdc::transaction::full_tx& tx,
+                                 size_t idx,
+                                 const cbdc::config::options& options)
+        -> std::optional<witness_error_code>;
+    auto
+    check_mint_p2pk_witness_commitment(const cbdc::transaction::full_tx& tx,
+                                       size_t idx)
+        -> std::optional<witness_error_code>;
+    auto
+    check_mint_p2pk_witness_signature(const cbdc::transaction::full_tx& tx,
+                                      size_t idx,
+                                      const cbdc::config::options& options)
+        -> std::optional<witness_error_code>;
+
     auto to_string(const tx_error& err) -> std::string;
 }
 

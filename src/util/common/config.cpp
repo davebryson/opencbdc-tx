@@ -565,10 +565,10 @@ namespace cbdc::config {
             const auto minter_k = get_minter_key(i);
             const auto v = cfg.get_string(minter_k);
             if(!v.has_value()) {
-                return "Missing minter key/value: " + std::to_string(i) + " ("
+                return "Missing minter setting: " + std::to_string(i) + " ("
                      + minter_k + ")";
             }
-            const auto pubkey = cbdc::hash_from_hex(v.value());
+            const cbdc::pubkey_t pubkey = cbdc::hash_from_hex(v.value());
             opts.m_minter_pubkeys.insert(std::move(pubkey));
         }
         return std::nullopt;

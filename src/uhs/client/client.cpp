@@ -54,19 +54,24 @@ namespace cbdc {
         return ss.str();
     }
 
-    auto client::mint(size_t n_outputs, uint32_t output_val)
-        -> transaction::full_tx {
-        auto mint_tx = m_wallet.mint_new_coins(n_outputs, output_val);
-        import_transaction(mint_tx);
+    void client::setup_minter_wallet() {
+        m_wallet.generate_test_minter_key();
+        save();
+    }
 
-        // TODO: make a formal way of minting. For now bypass the sentinels.
-        if(!send_mint_tx(mint_tx)) {
-            m_logger->error("Failed to send mint tx");
+    auto client::mint(size_t n_outputs, uint32_t output_val)
+        -> std::pair<std::optional<transaction::full_tx>,
+                     std::optional<cbdc::sentinel::response>> {
+        static constexpr auto null_return
+            = std::make_pair(std::nullopt, std::nullopt);
+        auto mint_tx = m_wallet.mint_new_coins(n_outputs, output_val);
+
+        auto res = send_transaction(mint_tx);
+        if(!res.has_value()) {
+            return null_return;
         }
 
-        save();
-
-        return mint_tx;
+        return std::make_pair(mint_tx, res.value());
     }
 
     void client::sign_transaction(transaction::full_tx& tx) {
